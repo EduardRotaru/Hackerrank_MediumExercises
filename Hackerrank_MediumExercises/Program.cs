@@ -13,20 +13,10 @@ namespace Hackerrank_MediumExercises
 
         static void Main(string[] args)
         {
-            var sSample = "abccddde";
+            var ss = File.ReadAllText(@"C:\Users\test\source\repos\Hackerrank_MediumExercises\Hackerrank_MediumExercises\cacat.txt");
+            var arrr = ss.Split(' ').Select(x => int.Parse(x)).ToArray();
 
-            var ss = File.ReadAllLines(@"C:\Users\test\source\repos\Hackerrank_MediumExercises\Hackerrank_MediumExercises\cacat.txt");
-            var arrr = Array.ConvertAll(ss, s => int.Parse(s));
-            var ar2 = new int[] { 1, 3, 12, 5, 9, 10 };
-
-            foreach (var s in WeightedUniformStrings_GoodSolution(sSample, ar2))
-            {
-                WriteLine(s);
-            }
-
-            var sticks = new int[] { 1, 2, 3 };
-
-            MaximumPerimeterTriangle(sticks);
+            MaximumPerimeterTriangle(arrr);
         }
 
         static string Chiper(string s, int k)
@@ -195,26 +185,28 @@ namespace Hackerrank_MediumExercises
         static int[] MaximumPerimeterTriangle(int[] sticks)
         {
             Array.Sort(sticks);
-            var triangle = new int[3];
 
-            var listOfValidTriangles = new List<Triangle>();
+            var listOfValidTriangles = new Dictionary<int, Triangle>();
+            var max = int.MinValue;
+
             for (int i = 0; i < sticks.Length - 2; i++)
             {
                 if (sticks[i] + sticks[i + 1] > sticks[i + 2])
                 {
-                    listOfValidTriangles.Add(new Triangle(sticks[i], sticks[i + 1], sticks[i + 2]));
+                    var triangle = new Triangle(sticks[i], sticks[i + 1], sticks[i + 2]);
+                    var trianglePerimeter = triangle.Sum();
+
+                    if(!listOfValidTriangles.ContainsKey(trianglePerimeter))
+                        listOfValidTriangles.Add(trianglePerimeter, triangle);
+
+                    if (trianglePerimeter > max) max = trianglePerimeter;
                 }
             }
 
-            var res = listOfValidTriangles.FirstOrDefault(x => x.Sum() == listOfValidTriangles.Max(y => y.Sum()));
+            if (listOfValidTriangles.Count == 0) return new[] { -1 };
+            var res = listOfValidTriangles[max];
 
-            if (res.Sum() == 0) return new[] { -1 };
-
-            triangle[0] = res.X;
-            triangle[1] = res.Y;
-            triangle[2] = res.Z;
-
-            return triangle;
+            return new[] { res.X, res.Y, res.Z };
         }
     }
 
